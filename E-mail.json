@@ -1,0 +1,158 @@
+{
+  "name": "E-mail",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 9
+            }
+          ]
+        }
+      },
+      "name": "Agendamento Diário (Cron)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        -160
+      ],
+      "id": "050b022c-c48f-48d5-ad5c-3063af3920e6",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "functionCode": "// 1. Captura o Resumo da IA\n// (O seu código para isto já está correto)\nconst aiSummary = items[0].json.output || \"O resumo não foi gerado pela IA.\";\n\n// 2. Cria a data\n// (O seu código para isto já está correto)\nconst hoje = new Date().toLocaleDateString('pt-BR');\n\n// 3. Transforma o resumo em HTML para o E-mail\n// 3a. Substitui as quebras de linha (\\n) por tags <br> (quebra de linha HTML)\nlet emailBody = aiSummary.replace(/\\n/g, '<br>');\n\n// 3b. Substitui o Markdown de negrito (**) por tags <strong> (negrito HTML)\nemailBody = emailBody.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n\n// 4. Monta o corpo final do e-mail\nconst finalHtmlBody = `\n  <p><b>Data:</b> ${hoje}</p>\n  <br>\n  <p>${emailBody}</p>\n`;\n\n// 5. Retorna os dados para o próximo nó (o nó de E-mail)\n// O próximo nó de e-mail deverá ser configurado para enviar um e-mail em HTML\n// e usar a variável 'htmlParaEmail' no corpo.\nreturn [{\n  json: {\n    htmlParaEmail: finalHtmlBody,\n    assuntoEmail: \"Resumo Diário do Agente de IA\"\n  }\n}];"
+      },
+      "name": "Formatar Resultados",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        -160
+      ],
+      "id": "d8fb15cb-6979-49f1-ae48-b972781d659e"
+    },
+    {
+      "parameters": {
+        "fromEmail": "fnoggy96@gmail.com",
+        "toEmail": "nogfechemicaleng@gmail.com",
+        "ccEmail": "nogdev.eq@gmail.com",
+        "bccEmail": "fnoggy96@gmail.com",
+        "subject": "Relatório Diário EQ",
+        "text": "=",
+        "html": "={{ $json.htmlParaEmail }}",
+        "options": {}
+      },
+      "name": "Enviar E-mail (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -160
+      ],
+      "id": "1d50b971-83ff-4401-ba7b-72d2229b59aa",
+      "credentials": {
+        "smtp": {
+          "id": "HqeUBXurdic4HPSf",
+          "name": "SMTP account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Atue como um especialista em Engenharia Química e Segurança de Processos.\nCrie um resumo diário explicando um conceito fundamental da área.\n\nO formato da resposta deve ser um texto didático, dividido em parágrafos claros.\nUse negrito (com markdown, assim: **termo importante**) para destacar os principais termos técnicos.\n\nO tema de hoje deve ser diferente dos dias anteriores.  \n\nSepare as informações por parágrafos de acordo com a norma da lingua portuguesa. ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1104,
+        -160
+      ],
+      "id": "37c59e41-5b8d-485e-93e4-ec5872cf65af",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        80
+      ],
+      "id": "ec20c18f-d41d-481f-ae3e-a3b49b03615f",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "41NgJrNIbos6OWUD",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Agendamento Diário (Cron)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resultados": {
+      "main": [
+        [
+          {
+            "node": "Enviar E-mail (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0574fae9-fb9b-4d81-a229-98198aa0a34b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f8a8d2b3652978448a505b1a1b9327b8bab0a48da0633c2694d8241949f0ee9a"
+  },
+  "id": "lIEEmrOHke23J3H8",
+  "tags": []
+}
