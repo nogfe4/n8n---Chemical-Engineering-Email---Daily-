@@ -70,6 +70,7 @@ git clone https://github.com/seuusuario/agente-diario-n8n.git
 cd agente-diario-n8n
 pip install -r requirements.txt 
 
+```
 
 [EN]: 
 
@@ -142,6 +143,6 @@ Clone the repository and install the basic dependencies:
 git clone https://github.com/yourusername/chemical-engineering-agent-n8n.git
 cd chemical-engineering-agent-n8n
 pip install -r requirements.txt
-
+```
 
 
