@@ -37,10 +37,10 @@
     },
     {
       "parameters": {
-        "fromEmail": "fnoggy96@gmail.com",
-        "toEmail": "nogfechemicaleng@gmail.com",
-        "ccEmail": "nogdev.eq@gmail.com",
-        "bccEmail": "fnoggy96@gmail.com",
+        "fromEmail": "youremail@email.com",
+        "toEmail": "destinyemail@email.com",
+        "ccEmail": "ccemail@email.com",
+        "bccEmail": "bccemail@email.com",
         "subject": "Relatório Diário EQ",
         "text": "=",
         "html": "={{ $json.htmlParaEmail }}",
